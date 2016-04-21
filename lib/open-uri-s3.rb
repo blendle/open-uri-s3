@@ -9,13 +9,14 @@ module URI
     def open(*args)
       options = {}
       options[:use_ssl] = false if ENV['AWS_USE_SSL'] == 'false'
+      options[:s3_endpoint] = ENV['AWS_S3_ENDPOINT'].gsub(/^https?:\/\//, '') if ENV['AWS_S3_ENDPOINT']
+
       s3 = ::AWS::S3.new(options)
       bucket = s3.buckets[self.hostname]
-      if ['AWS_S3_ENDPOINT'] || bucket.location_constraint
-        STDERR.puts "AWS_S3_ENDPOINT: #{ENV['AWS_S3_ENDPOINT'].inspect}"
-        s3_endpoint = ENV['AWS_S3_ENDPOINT'] ? ENV['AWS_S3_ENDPOINT'] : "s3-#{bucket.location_constraint}.amazonaws.com"
-        s3 = ::AWS::S3.new(options.update(s3_endpoint: s3_endpoint))
-        bucket = s3.buckets[self.hostname]
+      if !ENV['AWS_S3_ENDPOINT'] && bucket.location_constraint
+        s3_endpoint = "s3-#{bucket.location_constraint}.amazonaws.com"
+        s3          = ::AWS::S3.new(options.update(s3_endpoint: s3_endpoint))
+        bucket      = s3.buckets[self.hostname]
       end
 
       path = self.path[1..-1]
