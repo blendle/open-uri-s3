@@ -12,6 +12,7 @@ module URI
       s3 = ::AWS::S3.new(options)
       bucket = s3.buckets[self.hostname]
       if ['AWS_S3_ENDPOINT'] || bucket.location_constraint
+        STDERR.puts "AWS_S3_ENDPOINT: #{ENV['AWS_S3_ENDPOINT'].inspect}"
         s3_endpoint = ENV['AWS_S3_ENDPOINT'] ? ENV['AWS_S3_ENDPOINT'] : "s3-#{bucket.location_constraint}.amazonaws.com"
         s3 = ::AWS::S3.new(options.update(s3_endpoint: s3_endpoint))
         bucket = s3.buckets[self.hostname]
