@@ -9,7 +9,10 @@ module URI
     def open(*args)
       options = {}
       options[:use_ssl] = false if ENV['AWS_USE_SSL'] == 'false'
-      options[:s3_endpoint] = ENV['AWS_S3_ENDPOINT'].gsub(/^https?:\/\//, '') if ENV['AWS_S3_ENDPOINT']
+      if ENV["AWS_S3_ENDPOINT"]
+        s3_endpoint_uri = URI(ENV['AWS_S3_ENDPOINT'])
+        AWS.config(s3_endpoint: s3_endpoint_uri.host, s3_port: s3_endpoint_uri.port)
+      end
 
       s3 = ::AWS::S3.new(options)
       bucket = s3.buckets[self.hostname]
