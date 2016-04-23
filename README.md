@@ -24,6 +24,15 @@ Writing objects:
 open('s3://my.bucket/public/hello', 'w'){|f| f.write 'Hello world!'}
 ```
 
+## Using a different (non-aws) backend
+
+In order to use a different s3 compatible backend, you can use the following ENV variables
+
+```
+ENV['AWS_USE_SSL'] = 'false'
+ENV['AWS_S3_ENDPOINT'] = 'http://my-s3-alternative'
+```
+
 ## Contributing to open-uri-s3
 
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.

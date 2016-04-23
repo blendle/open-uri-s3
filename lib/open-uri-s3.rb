@@ -7,11 +7,19 @@ module URI
 
     # @return [AWS::S3::S3Object] S3 object (quacks like IO)
     def open(*args)
-      s3 = ::AWS::S3.new
+      options = {}
+      options[:use_ssl] = false if ENV['AWS_USE_SSL'] == 'false'
+      if ENV["AWS_S3_ENDPOINT"]
+        s3_endpoint_uri = URI(ENV['AWS_S3_ENDPOINT'])
+        AWS.config(s3_endpoint: s3_endpoint_uri.host, s3_port: s3_endpoint_uri.port)
+      end
+
+      s3 = ::AWS::S3.new(options)
       bucket = s3.buckets[self.hostname]
-      if bucket.location_constraint
-        s3 = ::AWS::S3.new(s3_endpoint: "s3-#{bucket.location_constraint}.amazonaws.com")
-        bucket = s3.buckets[self.hostname]
+      if !ENV['AWS_S3_ENDPOINT'] && bucket.location_constraint
+        s3_endpoint = "s3-#{bucket.location_constraint}.amazonaws.com"
+        s3          = ::AWS::S3.new(options.update(s3_endpoint: s3_endpoint))
+        bucket      = s3.buckets[self.hostname]
       end
 
       path = self.path[1..-1]
