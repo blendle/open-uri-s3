@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'open-uri-s3'
+require 'open_uri_s3'
 
 describe URI::S3 do
   let(:uri) { 's3://some-bucket/key/to/object' }
@@ -9,7 +9,10 @@ describe URI::S3 do
   let(:bucket) { instance_double('Aws::S3::Bucket') }
 
   let(:object) { instance_double('Aws::S3::Object') }
-  let(:bucket_loc) { instance_double('Aws::S3::Types::GetBucketLocationOutput', location_constraint: 'eu-west-1') }
+  let(:bucket_loc) do
+    instance_double('Aws::S3::Types::GetBucketLocationOutput',
+                    location_constraint: 'eu-west-1')
+  end
   let(:object_out) { instance_double('Aws::S3::Types::GetObjectOutput') }
   let(:body) { StringIO.new('contents') }
 
