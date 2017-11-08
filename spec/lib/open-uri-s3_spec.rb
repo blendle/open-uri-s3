@@ -1,15 +1,16 @@
 # frozen_string_literal: true
+
 require 'open-uri-s3'
 
 describe URI::S3 do
-  let(:uri){ 's3://some-bucket/key/to/object'}
+  let(:uri) { 's3://some-bucket/key/to/object' }
 
   let(:client) { instance_double('Aws::S3::Client') }
   let(:bucket) { instance_double('Aws::S3::Bucket') }
 
   let(:object) { instance_double('Aws::S3::Object') }
   let(:bucket_loc) { instance_double('Aws::S3::Types::GetBucketLocationOutput', location_constraint: 'eu-west-1') }
-  let(:object_out) { instance_double("Aws::S3::Types::GetObjectOutput") }
+  let(:object_out) { instance_double('Aws::S3::Types::GetObjectOutput') }
   let(:body) { StringIO.new('contents') }
 
   before do
@@ -29,11 +30,11 @@ describe URI::S3 do
 
     context 'when a block is given' do
       it 'yields the object' do
-        expect{ |b| open(uri, &b) }.to yield_with_args(body)
+        expect { |b| open(uri, &b) }.to yield_with_args(body)
       end
 
       it 'returns the result of the block' do
-        expect(open(uri){ 'result' }).to eq 'result'
+        expect(open(uri) { 'result' }).to eq 'result'
       end
     end
   end
