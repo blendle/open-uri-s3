@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.files        = Dir['{lib}/**/*.rb', 'bin/*', 'LICENSE.txt', '*.md']
   s.require_path = 'lib'
 
-  s.add_runtime_dependency 'aws-sdk-v1'
+  s.add_runtime_dependency('aws-sdk-s3', '~> 1')
 
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '~> 3.0'
