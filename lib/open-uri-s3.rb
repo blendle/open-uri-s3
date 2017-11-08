@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-require 'aws-sdk-v1'
+
+require 'aws-sdk-s3'
 require 'open-uri'
 require 'uri'
 
@@ -8,22 +9,18 @@ module URI
     # @return [AWS::S3::S3Object] S3 object (quacks like IO)
     def open(*_args)
       options = {}
-      options[:use_ssl] = false if ENV['AWS_USE_SSL'] == 'false'
-      if ENV['AWS_S3_ENDPOINT']
-        s3_endpoint_uri = URI(ENV['AWS_S3_ENDPOINT'])
-        AWS.config(s3_endpoint: s3_endpoint_uri.host, s3_port: s3_endpoint_uri.port)
-      end
+      options[:endpoint] = URI(ENV['AWS_S3_ENDPOINT']) if ENV['AWS_S3_ENDPOINT']
 
-      s3 = ::AWS::S3.new(options)
-      bucket = s3.buckets[hostname]
-      if !ENV['AWS_S3_ENDPOINT'] && bucket.location_constraint
-        s3_endpoint = "s3-#{bucket.location_constraint}.amazonaws.com"
-        s3          = ::AWS::S3.new(options.update(s3_endpoint: s3_endpoint))
-        bucket      = s3.buckets[hostname]
-      end
+      client = Aws::S3::Client.new(options)
 
-      path = self.path[1..-1]
-      object = bucket.objects[path]
+      bucket_location = client.get_bucket_location(bucket: hostname)
+      region = bucket_location.location_constraint
+
+      options = options.merge(region: region)
+      bucket = Aws::S3::Bucket.new(hostname, options)
+
+      key = path[1..-1]
+      object = bucket.object(key).get.body
 
       if block_given?
         yield object
