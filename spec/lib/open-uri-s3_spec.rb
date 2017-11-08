@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'open_uri_s3'
+require 'open-uri-s3'
 
 describe URI::S3 do
   let(:uri) { 's3://some-bucket/key/to/object' }
