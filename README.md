@@ -1,3 +1,7 @@
+# DEPRECATED
+
+This tool uses aws-sdk-v1 which is now longer activly supported. Consider using alternative ways to read/write files from/to S3.
+
 # open-uri-s3
 
 Usage:
